@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bikebear Style - Interactive Portfolio</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial Black', sans-serif; }
+        :root { --yellow: #f6e000; --black: #000000; --white: #ffffff; }
+        body { background-color: var(--yellow); color: var(--black); overflow-x: hidden; }
+
+        /* NAV & LAYOUT */
+        nav { position: fixed; top: 0; width: 100%; padding: 40px; display: flex; justify-content: space-between; z-index: 1000; }
+        .logo { font-size: 1.2rem; font-weight: 900; }
+        section { min-height: 100vh; width: 100%; display: flex; flex-direction: column; justify-content: center; padding: 100px 5%; }
+        .black-bg { background-color: var(--black); color: var(--white); }
+        .big-text { font-size: 14vw; line-height: 0.85; text-transform: uppercase; }
+
+        /* PORTFOLIO GRID */
+        .portfolio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: var(--black); }
+        .portfolio-item { 
+            position: relative; aspect-ratio: 1 / 1; overflow: hidden; 
+            display: flex; flex-direction: column; justify-content: flex-end; 
+            cursor: pointer; text-decoration: none; 
+        }
+        .item-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: 0.6s ease; z-index: 1; }
+        .portfolio-item:hover .item-bg { transform: scale(1.05); }
+        
+        /* Brand Colors */
+        .tealive { background-color: #4b2d83; }
+        .marrybrown { background-color: #ed1c24; }
+        .pakmat { background-color: #1a472a; }
+        .ayamgepuk { background-color: #ffcc00; }
+
+        .item-info { position: relative; z-index: 2; padding: 30px; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: white; }
+        .item-name { font-size: 2.2rem; text-transform: uppercase; }
+        .tag { padding: 5px 12px; border: 1px solid white; border-radius: 20px; font-size: 0.65rem; text-transform: uppercase; margin-top: 10px; display: inline-block; }
+
+        /* MODAL (The "New Tab" Experience inside the page) */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--white); z-index: 2000;
+            display: none; padding: 100px 10%; overflow-y: auto; color: var(--black);
+        }
+        .modal-close { position: fixed; top: 40px; right: 40px; font-size: 1.5rem; cursor: pointer; font-weight: 900; }
+        .modal-content h1 { font-size: 8vw; margin-bottom: 20px; text-transform: uppercase; }
+        .modal-content p { font-family: 'Arial', sans-serif; font-size: 1.2rem; line-height: 1.6; max-width: 700px; margin-bottom: 40px; }
+        .official-link { 
+            display: inline-block; padding: 20px 40px; background: var(--black); 
+            color: var(--white); text-decoration: none; border-radius: 50px; font-weight: 900; 
+        }
+
+        #cursor { position: fixed; width: 15px; height: 15px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+
+    <nav>
+        <div class="logo">BIKEBEAR.</div>
+    </nav>
+
+    <main>
+        <section class="black-bg">
+            <h1 class="big-text">WORK.</h1>
+        </section>
+
+        <section class="black-bg" style="display: block;">
+            <div class="portfolio-grid">
+                <div class="portfolio-item" onclick="openModal('tealive')">
+                    <div class="item-bg tealive"></div>
+                    <div class="item-info">
+                        <div class="item-name">Tealive</div>
+                        <span class="tag">Web Design</span>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" onclick="openModal('marrybrown')">
+                    <div class="item-bg marrybrown"></div>
+                    <div class="item-info">
+                        <div class="item-name">Marrybrown</div>
+                        <span class="tag">Branding</span>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" onclick="openModal('pakmat')">
+                    <div class="item-bg pakmat"></div>
+                    <div class="item-info">
+                        <div class="item-name">Pak Mat Western</div>
+                        <span class="tag">Campaign</span>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" onclick="openModal('ayamgepuk')">
+                    <div class="item-bg ayamgepuk"></div>
+                    <div class="item-info" style="color: black;">
+                        <div class="item-name">Ayam Gepuk</div>
+                        <span class="tag" style="border-color: black;">Performance</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="projectModal" class="modal">
+        <div class="modal-close" onclick="closeModal()">CLOSE X</div>
+        <div class="modal-content" id="modalContent">
+            </div>
+    </div>
+
+    <script>
+        // Data for each brand
+        const brandData = {
+            tealive: {
+                title: "Tealive",
+                desc: "We redesigned the Tealive digital experience to match their 'Always More Than Tea' philosophy. This included a custom UI for their menu and seasonal campaign assets.",
+                link: "https://www.tealive.com.my/"
+            },
+            marrybrown: {
+                title: "Marrybrown",
+                desc: "Refreshing a local legend. Our branding work focused on highlighting Marrybrown's Malaysian heritage while modernizing the look for a younger audience.",
+                link: "https://marrybrown.com/"
+            },
+            pakmat: {
+                title: "Pak Mat Western",
+                desc: "Scaling the viral sensation. We managed digital campaigns that drove massive engagement for their ready-to-cook meat products across Southeast Asia.",
+                link: "https://pakmatwestern.com/"
+            },
+            ayamgepuk: {
+                title: "Ayam Gepuk",
+                desc: "Performance marketing and social media strategy to boost outlet visits and brand recognition across multiple states.",
+                link: "https://ayamgepukpakgembus.com.my/"
+            }
+        };
+
+        function openModal(brandKey) {
+            const data = brandData[brandKey];
+            const content = `
+                <h1>${data.title}</h1>
+                <p>${data.desc}</p>
+                <div style="background: #eee; width: 100%; height: 300px; margin-bottom: 40px; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #ccc;">[ PROJECT IMAGE / WEB DESIGN PREVIEW ]</div>
+                <a href="${data.link}" target="_blank" class="official-link">VISIT OFFICIAL WEBSITE</a>
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('projectModal').style.display = 'block';
+            gsap.from(".modal-content", { y: 50, opacity: 0, duration: 0.5 });
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').style.display = 'none';
+        }
+
+        // GSAP Setup
+        gsap.registerPlugin(ScrollTrigger);
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+    </script>
+</body>
+</html>
